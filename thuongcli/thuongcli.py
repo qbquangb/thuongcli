@@ -1,7 +1,6 @@
-# 73e1cli/73e1cli.py
-
 import argparse
 import os
+from isM_my_control_by_hand import control_by_hand
 
 def clean_temp_files(temp_folder):
     if temp_folder and os.path.exists(temp_folder):
@@ -23,15 +22,22 @@ def clean_temp_files(temp_folder):
                     print(f"Failed to clean {temp_folder}: {e}")
 
 def main():
-    parser = argparse.ArgumentParser(prog="mycli")
+    parser = argparse.ArgumentParser(
+        prog="cli",
+        usage="mo CMD va nhan cli --help",
+        description="Chuong trinh dieu khien may tinh bang dong lenh.\n"
+                    "Chuong trinh duoc viet boi Tran Dinh Thuong.\n"
+                    "Email: qbquangbinh@gmail.com"
+    )
     parser.add_argument("--name", "-n", help="Your name", default="Tran Dinh Thuong")
     parser.add_argument("--shutdown", "-s", action="store_true", help="Shutdown the computer")
     parser.add_argument("--restart", "-r", action="store_true", help="Restart the computer")
     parser.add_argument("--sleep", "-sl", action="store_true", help="Put the computer to sleep")
-    parser.add_argument("--version", "-v", action="version", version="mycli 0.1.1", help="Show version information")
+    parser.add_argument("--version", "-v", action="version", version="mycli 1.0.1", help="Show version information")
     parser.add_argument("--youtube", "-y", action="store_true", help="Open YouTube in the default web browser")
     parser.add_argument("--clean", "-c", action="store_true", help="Clean temporary files")
     parser.add_argument("--deepclean", "-dc", action="store_true", help="Xoa tat ca các tep va thu muc trong thu muc Downloads")
+    parser.add_argument("--control_hand", "-ch", action="store_true", help="Dieu khien may tinh bang cu chi tay.")
     args = parser.parse_args()
     print(f"Hello, {args.name}!")
     if args.shutdown:
@@ -92,6 +98,8 @@ def main():
         else:
             print("Bo qua viec xoa tep tam thoi.")
         print("-" * 50)
+    elif args.control_hand:
+        control_by_hand()
 
 if __name__ == "__main__":
     main()

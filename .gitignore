@@ -2,3 +2,4 @@ tests/
 build/
 dist/
 thuongcli.egg-info/
+download/
