@@ -398,6 +398,126 @@ def clean_temp_files(temp_folder):
                 except Exception as e:
                     print(f"Failed to clean {temp_folder}: {e}")
 
+# ******************Begin program cipher password************************************************************
+
+def password_cipher():
+    import os
+
+    def xor_encrypt(plaintext: bytes, key: bytes) -> bytes:
+        return bytes(p ^ key[i % len(key)] for i, p in enumerate(plaintext))
+    
+    def xor_decrypt(ciphertext: bytes, key: bytes) -> bytes:
+    # cùng phép XOR, vì tính chất đảo ngược
+        return xor_encrypt(ciphertext, key)
+
+    FLAG_ENCRYPT = 0b0001
+    FLAG_DECRYPT = 0b0010
+    OPTION = 0b0000
+
+    print("Chon 1 trong 2:")
+    print("M. Ma hoa")
+    print("G. Giai ma")
+    choice = input("Nhap lua chon cua ban: ").lower()
+
+    while choice not in ['m', 'g']:
+            choice = input("Nhap M de ma hoa, G de giai ma: ").lower()
+    if choice == 'm':
+        OPTION |= FLAG_ENCRYPT
+    else:
+        OPTION |= FLAG_DECRYPT
+    # Thuc hien ma hoa ********************************************************************************
+    if OPTION & FLAG_ENCRYPT:
+        key = os.getenv("keypass").encode('utf-8')
+        if not key:
+            print("Bien moi truong keypass khong ton tai.")
+            return
+
+        plaintext = input("Nhap van ban can ma hoa: ").encode('utf-8')
+
+        add_note = input("Nhap them ghi chu cho password: ")
+
+        ciphertext = xor_encrypt(plaintext, key)
+        print(f"Van ban da ma hoa: {ciphertext}")
+
+        # Đọc đường dẫn từ dòng số 2 trong tệp config.txt
+        config_file = "config.txt"
+        if os.path.exists(config_file):
+            with open(config_file, "r") as f:
+                lines = f.readlines()
+                if len(lines) >= 2:
+                    password_dir = lines[1].strip()  # Lấy dòng số 2 và loại bỏ khoảng trắng
+                else:
+                    print("Tệp config.txt không có đủ dòng.")
+                    return
+        else:
+            print(f"Tệp cấu hình '{config_file}' không tồn tại.")
+            return
+        # Kiểm tra và tạo thư mục nếu chưa tồn tại
+        if not os.path.exists(password_dir):
+            os.makedirs(password_dir)
+            print(f"Đã tạo thư mục: {password_dir}")
+        else:
+            print(f"Thư mục đã tồn tại: {password_dir}")
+        # Sử dụng đường dẫn để lưu tệp
+        file_path = os.path.join(password_dir, "ciphertext.txt")
+        file_path_note = os.path.join(password_dir, "ciphertext_note.txt")
+
+        with open(file_path, "ab") as f:
+            f.write(ciphertext + b'\n')
+        print(f"Van ban da duoc ghi vao tep '{file_path}'.")
+        with open(file_path_note, "a") as f:
+            f.write(f"{add_note}\n")
+        print(f"Ghi chu da duoc ghi vao tep '{file_path_note}'.")
+
+    # Ket thuc ma hoa *******************************************************************************
+    # Thuc hien giai ma ****************************************************************************
+
+    if OPTION & FLAG_DECRYPT:
+        key = os.getenv("keypass").encode('utf-8')
+        if not key:
+            print("Bien moi truong keypass khong ton tai.")
+            return
+        line_number = input("Nhap so dong can giai ma: ")
+        try:
+            line_number = int(line_number)
+        except ValueError:
+            print("So dong khong hop le. Vui long nhap mot so nguyen.")
+            return
+        # Đọc đường dẫn từ dòng số 2 trong tệp config.txt
+        config_file = "config.txt"
+        if os.path.exists(config_file):
+            with open(config_file, "r") as f:
+                lines = f.readlines()
+                if len(lines) >= 2:
+                    password_dir = lines[1].strip()  # Lấy dòng số 2 và loại bỏ khoảng trắng
+                else:
+                    print("Tệp config.txt không có đủ dòng.")
+                    return
+        else:
+            print(f"Tệp cấu hình '{config_file}' không tồn tại.")
+            return
+        
+        # Sử dụng đường dẫn để đọc tệp
+        file_path = os.path.join(password_dir, "ciphertext.txt")
+        file_path_note = os.path.join(password_dir, "ciphertext_note.txt")
+        try:
+            with open(file_path, "rb") as f:
+                lines = f.readlines()
+            if line_number <= 0 or line_number > len(lines):
+                print("So dong vuot qua pham vi cua tep.")
+                return
+            ciphertext = lines[line_number - 1].strip()
+            plaintext = xor_decrypt(ciphertext, key)
+            print(f"VAN BAN DA GIAI MA: {plaintext.decode('utf-8')}")
+        except FileNotFoundError:
+            print(f"Tep '{file_path}' khong ton tai.")
+        except Exception as e:
+            print(f"Loi khi doc tep: {e}")
+
+    # ket thuc giai ma ****************************************************************************
+
+# ******************End program cipher password********************************************************
+
 def main():
     parser = argparse.ArgumentParser(
         prog="cli",
@@ -410,11 +530,12 @@ def main():
     parser.add_argument("--shutdown", "-s", action="store_true", help="Shutdown the computer")
     parser.add_argument("--restart", "-r", action="store_true", help="Restart the computer")
     parser.add_argument("--sleep", "-sl", action="store_true", help="Put the computer to sleep")
-    parser.add_argument("--version", "-v", action="version", version="mycli 1.0.5", help="Show version information")
+    parser.add_argument("--version", "-v", action="version", version="mycli 1.0.6", help="Show version information")
     parser.add_argument("--youtube", "-y", action="store_true", help="Open YouTube in the default web browser")
     parser.add_argument("--clean", "-c", action="store_true", help="Clean temporary files")
     parser.add_argument("--deepclean", "-dc", action="store_true", help="Xoa tat ca các tep va thu muc trong thu muc Downloads")
     parser.add_argument("--control_hand", "-ch", action="store_true", help="Dieu khien may tinh bang cu chi tay.")
+    parser.add_argument("--cipher", "-ci", action="store_true", help="Ma hoa van ban bang XOR cipher.")
     args = parser.parse_args()
     print(f"Hello, {args.name}!")
     if args.shutdown:
@@ -477,6 +598,8 @@ def main():
         print("-" * 50)
     elif args.control_hand:
         control_by_hand()
+    elif args.cipher:
+        password_cipher()
 
 if __name__ == "__main__":
     main()

@@ -3,3 +3,5 @@ build/
 dist/
 thuongcli.egg-info/
 download/
+thuongcli/config.txt
+thuongcli/robot_brain.mp3

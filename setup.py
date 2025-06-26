@@ -12,7 +12,7 @@ with io.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='thuongcli',                    # Tên gói: thường chỉ gồm chữ thường và dấu gạch ngang
-    version='1.0.5',                      # Phiên bản: tuân theo Semantic Versioning
+    version='1.0.6',                      # Phiên bản: tuân theo Semantic Versioning
     author='Tran Dinh Thuong',
     author_email='qbquangbinh@gmail.com',
     url='https://github.com/qbquangb/thuongcli',  # URL của project
@@ -54,3 +54,10 @@ setup(
     # include_package_data=True,            # bao gồm các file theo MANIFEST.in (nếu có)
     # zip_safe=False,
 )
+
+
+'''
+1. python setup.py sdist bdist_wheel
+2. python -m twine upload dist/*
+3. pip install thuongcli
+'''
