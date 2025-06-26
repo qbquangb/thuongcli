@@ -1,5 +1,6 @@
 import argparse
 import os
+from thuonglib.recycleBin import empty_recycle_bin
 
 # **********************************************************************************************
 def control_by_hand():
@@ -530,7 +531,7 @@ def main():
     parser.add_argument("--shutdown", "-s", action="store_true", help="Shutdown the computer")
     parser.add_argument("--restart", "-r", action="store_true", help="Restart the computer")
     parser.add_argument("--sleep", "-sl", action="store_true", help="Put the computer to sleep")
-    parser.add_argument("--version", "-v", action="version", version="mycli 1.0.6", help="Show version information")
+    parser.add_argument("--version", "-v", action="version", version="mycli 1.0.7", help="Show version information")
     parser.add_argument("--youtube", "-y", action="store_true", help="Open YouTube in the default web browser")
     parser.add_argument("--clean", "-c", action="store_true", help="Clean temporary files")
     parser.add_argument("--deepclean", "-dc", action="store_true", help="Xoa tat ca các tep va thu muc trong thu muc Downloads")
@@ -583,6 +584,19 @@ def main():
         else:
             print("Bo qua viec xoa tep tam thoi.")
         print("-" * 50)
+        # ***************************************************************************************************
+
+        print(f"Xac nhan xoa thung rac Recycle Bin")
+        print("Nhan y de xoa, nhan n de bo qua.")
+        user_input = input("Ban co muon xoa khong? (y/n): ").lower()
+        while user_input not in ['y', 'n']:
+            user_input = input("Nhap y de xoa, nhap n de bo qua: ").lower()
+        if user_input == 'y':
+            empty_recycle_bin()
+        else:
+            print("Bo qua viec xoa thung rac Recycle Bin.")
+        print("-" * 50)
+            
     elif args.deepclean:
         temp_folder = os.path.join(os.path.expanduser("~"), "Downloads")
         print("-" * 50)
