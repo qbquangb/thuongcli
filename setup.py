@@ -12,7 +12,7 @@ with io.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='thuongcli',                    # Tên gói: thường chỉ gồm chữ thường và dấu gạch ngang
-    version='1.0.8',                      # Phiên bản: tuân theo Semantic Versioning
+    version='1.0.9',                      # Phiên bản: tuân theo Semantic Versioning
     author='Tran Dinh Thuong',
     author_email='qbquangbinh@gmail.com',
     url='https://github.com/qbquangb/thuongcli',  # URL của project
@@ -24,7 +24,7 @@ setup(
     packages=find_packages(),
     python_requires='>=3.7',              # yêu cầu Python
     install_requires=[
-        'thuonglib>=1.0.3',           # thư viện phụ thuộc chính
+        'thuonglib>=1.0.4',           # thư viện phụ thuộc chính
         # 'requests>=2.0',                  # dependencies chính
         # 'numpy>=1.20',                  # thêm nếu cần
     ],

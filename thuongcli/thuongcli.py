@@ -1,11 +1,11 @@
 import argparse
 import os
-from thuonglib.recycleBin import empty_recycle_bin
 from thuonglib.encrypt_decrypt_file import encrypt_file, decrypt_file
 from thuonglib.c_by_hand import control_by_hand
-from thuonglib.delete_folder import d_folder
+from thuonglib.delete_folder import clean_files_temp, del_dir_downloads
 from thuonglib.password_cipher import p_cipher
 from thuonglib.divide_merge_file import divide_file, merge_file
+from thuonglib.AES_CBC import encrypt_file_AES_CBC, decrypt_file_AES_CBC
 
 def main():
     parser = argparse.ArgumentParser(
@@ -19,7 +19,7 @@ def main():
     parser.add_argument("--shutdown", "-s", action="store_true", help="Shutdown the computer")
     parser.add_argument("--restart", "-r", action="store_true", help="Restart the computer")
     parser.add_argument("--sleep", "-sl", action="store_true", help="Put the computer to sleep")
-    parser.add_argument("--version", "-v", action="version", version="mycli 1.0.8", help="Show version information")
+    parser.add_argument("--version", "-v", action="version", version="mycli 1.0.9", help="Show version information")
     parser.add_argument("--youtube", "-y", action="store_true", help="Open YouTube in the default web browser")
     parser.add_argument("--clean", "-c", action="store_true", help="Clean temporary files")
     parser.add_argument("--deepclean", "-dc", action="store_true", help="Xoa tat ca các tep va thu muc trong thu muc Downloads")
@@ -28,6 +28,8 @@ def main():
     parser.add_argument("--encrypt_file", "-ef", action="store_true", help="Ma hoa file.")
     parser.add_argument("--decrypt_file", "-df", action="store_true", help="Giai ma file.")
     parser.add_argument("--div_mer_file", "-dmf", action="store_true", help="Chia va ghep file.")
+    parser.add_argument("--encrypt_file_AES_CBC", "-efac", action="store_true", help="Ma hoa file.")
+    parser.add_argument("--decrypt_file_AES_CBC", "-dfac", action="store_true", help="Giai ma file.")
     args = parser.parse_args()
     print(f"Hello, {args.name}!")
     if args.shutdown:
@@ -39,67 +41,11 @@ def main():
     elif args.youtube:
         os.system("start https://www.youtube.com")
     elif args.clean:
-        temp_folder = os.path.join(os.getenv('SystemRoot'), 'TEMP')
-        print("-" * 50)
-        print(f"Xac nhan xoa cac tep va thu muc tam thoi tai thu muc: {temp_folder}")
-        print("Nhan y de xoa, nhan n de bo qua.")
-        user_input = input("Ban co muon xoa khong? (y/n): ").lower()
-        while user_input not in ['y', 'n']:
-            user_input = input("Nhap y de xoa, nhap n de bo qua: ").lower()
-        if user_input == 'y':
-            d_folder(temp_folder)
-        else:
-            print("Bo qua viec xoa tep tam thoi.")
-        print("-" * 50)
-        
-        temp_folder = os.getenv("TEMP")
-        print(f"Xac nhan xoa cac tep va thu muc tam thoi tai thu muc: {temp_folder}")
-        print("Nhan y de xoa, nhan n de bo qua.")
-        user_input = input("Ban co muon xoa khong? (y/n): ").lower()
-        while user_input not in ['y', 'n']:
-            user_input = input("Nhap y de xoa, nhap n de bo qua: ").lower()
-        if user_input == 'y':
-            d_folder(temp_folder)
-        else:
-            print("Bo qua viec xoa tep tam thoi.")
-        print("-" * 50)
-        
-        temp_folder = os.getenv("TMP")
-        print(f"Xac nhan xoa cac tep va thu muc tam thoi tai thu muc: {temp_folder}")
-        print("Nhan y de xoa, nhan n de bo qua.")
-        user_input = input("Ban co muon xoa khong? (y/n): ").lower()
-        while user_input not in ['y', 'n']:
-            user_input = input("Nhap y de xoa, nhap n de bo qua: ").lower()
-        if user_input == 'y':
-            d_folder(temp_folder)
-        else:
-            print("Bo qua viec xoa tep tam thoi.")
-        print("-" * 50)
-
-        print(f"Xac nhan xoa thung rac Recycle Bin")
-        print("Nhan y de xoa, nhan n de bo qua.")
-        user_input = input("Ban co muon xoa khong? (y/n): ").lower()
-        while user_input not in ['y', 'n']:
-            user_input = input("Nhap y de xoa, nhap n de bo qua: ").lower()
-        if user_input == 'y':
-            empty_recycle_bin()
-        else:
-            print("Bo qua viec xoa thung rac Recycle Bin.")
-        print("-" * 50)
+        clean_files_temp()
             
     elif args.deepclean:
-        temp_folder = os.path.join(os.path.expanduser("~"), "Downloads")
-        print("-" * 50)
-        print(f"Xac nhan xoa cac tep va thu muc tam thoi tai thu muc: {temp_folder}")
-        print("Nhan y de xoa, nhan n de bo qua.")
-        user_input = input("Ban co muon xoa khong? (y/n): ").lower()
-        while user_input not in ['y', 'n']:
-            user_input = input("Nhap y de xoa, nhap n de bo qua: ").lower()
-        if user_input == 'y':
-            d_folder(temp_folder)
-        else:
-            print("Bo qua viec xoa tep tam thoi.")
-        print("-" * 50)
+        del_dir_downloads()
+        
     elif args.control_hand:
         control_by_hand()
     elif args.cipher:
@@ -117,6 +63,10 @@ def main():
             divide_file()
         else:
             merge_file()
+    elif args.encrypt_file_AES_CBC:
+        encrypt_file_AES_CBC()
+    elif args.decrypt_file_AES_CBC:
+        decrypt_file_AES_CBC()
 
 if __name__ == "__main__":
     main()
