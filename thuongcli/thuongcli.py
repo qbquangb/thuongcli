@@ -1,12 +1,12 @@
 import argparse
 import os
-from thuonglib.encrypt_decrypt_file import encrypt_file, decrypt_file
+from thuonglib.encrypt_decrypt_file import encrypt_file as encrypt_file_XOR, decrypt_file as decrypt_file_XOR
 from thuonglib.c_by_hand import control_by_hand
 from thuonglib.delete_folder import clean_files_temp, del_dir_downloads
 from thuonglib.password_cipher import p_cipher
 from thuonglib.divide_merge_file import divide_file, merge_file
 from thuonglib.AES_CBC import encrypt_file_AES_CBC, decrypt_file_AES_CBC
-from thuonglib.RSA_OAEP import export_keys_RSA_OAEP, encrypt_file, decrypt_file
+from thuonglib.RSA_OAEP import export_keys_RSA_OAEP, encrypt_file as encrypt_file_rsa, decrypt_file as decrypt_file_rsa
 
 def main():
     parser = argparse.ArgumentParser(
@@ -25,14 +25,19 @@ def main():
     parser.add_argument("--clean", "-c", action="store_true", help="Clean temporary files")
     parser.add_argument("--deepclean", "-dc", action="store_true", help="Xoa tat ca các tep va thu muc trong thu muc Downloads")
     parser.add_argument("--control_hand", "-ch", action="store_true", help="Dieu khien may tinh bang cu chi tay.")
-    parser.add_argument("--cipher", "-ci", action="store_true", help="Ma hoa van ban bang XOR cipher.")
-    parser.add_argument("--encrypt_file", "-ef", action="store_true", help="Ma hoa file bằng XOR cipher.")
-    parser.add_argument("--decrypt_file", "-df", action="store_true", help="Giai ma file bằng XOR cipher.")
     parser.add_argument("--div_mer_file", "-dmf", action="store_true", help="Chia va ghep file.")
-    parser.add_argument("--encrypt_file_AES_CBC", "-efac", action="store_true", help="Ma hoa file bằng AES-CBC.")
-    parser.add_argument("--decrypt_file_AES_CBC", "-dfac", action="store_true", help="Giai ma file bằng AES-CBC.")
-    subparsers = parser.add_subparsers(dest='command', help="Chương trình tạo khóa RSA, mã hóa và giải mã file.")
+    subparsers = parser.add_subparsers(dest='command')
     subparsers.required = False
+
+    cipher_text_parser = subparsers.add_parser("cipher", help="Ma hoa van ban bang XOR cipher.")
+
+    XOR_file_parser = subparsers.add_parser("XOR", help="Mã hóa file và giải mã file bằng XOR cipher.")
+    XOR_file_parser.add_argument("--encrypt_file", "-ef", action="store_true", help="Mã hóa file bằng XOR cipher.")
+    XOR_file_parser.add_argument("--decrypt_file", "-df", action="store_true", help="Giải mã file bằng XOR cipher.")
+
+    AES_CBC_parser = subparsers.add_parser("AES_CBC", help="Chương trình mã hóa và giải mã file bằng AES-CBC.")
+    AES_CBC_parser.add_argument("--encrypt_file", "-ef", action="store_true", help="Mã hóa file bằng AES-CBC.")
+    AES_CBC_parser.add_argument("--decrypt_file", "-df", action="store_true", help="Giải mã file bằng AES-CBC.")
 
     AES_RSA_parser = subparsers.add_parser("AES_RSA", help="Chương trình tạo khóa RSA, mã hóa và giải mã file bằng AES-CBC và RSA-OAEP.")
     AES_RSA_parser.add_argument("--generate_keys", "-gk", action="store_true", help="Tạo cặp khóa RSA (public và private).")
@@ -57,12 +62,13 @@ def main():
         
     elif args.control_hand:
         control_by_hand()
-    elif args.cipher:
+    elif args.command == "cipher":
         p_cipher()
-    elif args.encrypt_file:
-        encrypt_file()
-    elif args.decrypt_file:
-        decrypt_file()
+    elif args.command == "XOR":
+        if args.encrypt_file:
+            encrypt_file_XOR()
+        elif args.decrypt_file:
+            decrypt_file_XOR()
     elif args.div_mer_file:
         print("Chia va ghep file.")
         choice = input("Nhap lua chon cua ban (d/m): ").lower()
@@ -72,17 +78,19 @@ def main():
             divide_file()
         else:
             merge_file()
-    elif args.encrypt_file_AES_CBC:
-        encrypt_file_AES_CBC()
-    elif args.decrypt_file_AES_CBC:
-        decrypt_file_AES_CBC()
+    elif args.command == "AES_CBC":
+        if args.encrypt_file:
+            encrypt_file_AES_CBC()
+        elif args.decrypt_file:
+            decrypt_file_AES_CBC()
     elif args.command == "AES_RSA":
         if args.generate_keys:
             export_keys_RSA_OAEP()
         elif args.encrypt_file:
-            encrypt_file()
+            encrypt_file_rsa()
         elif args.decrypt_file:
-            decrypt_file()
+            decrypt_file_rsa()
+
     else:
         parser.print_help()
 
