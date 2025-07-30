@@ -9,7 +9,7 @@ from thuonglib.AES_CBC import encrypt_file_AES_CBC, decrypt_file_AES_CBC
 from thuonglib.RSA_OAEP import export_keys_RSA_OAEP, encrypt_file as encrypt_file_rsa, decrypt_file as decrypt_file_rsa
 from thuonglib.AES_CTR import encrypt_file_AES_CTR, decrypt_file_AES_CTR
 from thuonglib.AES_GCM import encrypt_file_AES_GCM, decrypt_file_AES_GCM
-from thuonglib.HASH import sha256
+from thuonglib.HASH import sha256, sha512, sha3_256, sha3_512, check_hash
 
 def main():
     parser = argparse.ArgumentParser(
@@ -56,10 +56,12 @@ def main():
     AES_RSA_parser.add_argument("--decrypt_file", "-df", action="store_true", help="Giải mã file bằng AES-CBC và khóa RSA.")
     # ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤
     hash_parser = subparsers.add_parser("hash", help="Tạo giá trị băm SHA256, SHA512, SHA3_256, SHA3_512 từ dữ liệu đầu vào.")
-    hash_parser.add_argument("--algorithm", "-a", choices=["SHA256", "SHA512", "SHA3_256", "SHA3_512"], default="SHA256", 
-                             help="Chọn thuật toán băm SHA256, SHA512, SHA3_256, SHA3_512 (mặc định là SHA256).")
+    hash_parser.add_argument("--algorithm", "-a", choices=["SHA256", "SHA512", "SHA3_256", "SHA3_512"], default="SHA3_512", 
+                             help="Chọn thuật toán băm SHA256, SHA512, SHA3_256, SHA3_512 (mặc định là SHA3_512).")
     hash_parser.add_argument("data", type=str, 
                              help="Dữ liệu đầu vào để băm, chuỗi data hoặc chuỗi rỗng nếu tạo giá trị hash bằng với file.")
+    # ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤
+    check_hash_parser = subparsers.add_parser("check_hash", help="So sánh mã hash của file với mã hash đã cung cấp.")
     
     args = parser.parse_args()
     print(f"Hello, {args.name}!")
@@ -120,6 +122,14 @@ def main():
     elif args.command == "hash":
         if args.algorithm == "SHA256":
             sha256(args.data, file_write=0 if args.data else 1)
+        elif args.algorithm == "SHA512":
+            sha512(args.data, file_write=0 if args.data else 1)
+        elif args.algorithm == "SHA3_256":
+            sha3_256(args.data, file_write=0 if args.data else 1)
+        elif args.algorithm == "SHA3_512":
+            sha3_512(args.data, file_write=0 if args.data else 1)
+    elif args.command == "check_hash":
+        check_hash()
     else:
         parser.print_help()
 
