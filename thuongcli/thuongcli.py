@@ -1,15 +1,16 @@
 import argparse
 import os
-from thuonglib.encrypt_decrypt_file import encrypt_file as encrypt_file_XOR, decrypt_file as decrypt_file_XOR
-from thuonglib.c_by_hand import control_by_hand
-from thuonglib.delete_folder import clean_files_temp, del_dir_downloads
-from thuonglib.password_cipher import p_cipher
-from thuonglib.divide_merge_file import divide_file, merge_file
-from thuonglib.AES_CBC import encrypt_file_AES_CBC, decrypt_file_AES_CBC
-from thuonglib.RSA_OAEP import export_keys_RSA_OAEP, encrypt_file as encrypt_file_rsa, decrypt_file as decrypt_file_rsa
-from thuonglib.AES_CTR import encrypt_file_AES_CTR, decrypt_file_AES_CTR
-from thuonglib.AES_GCM import encrypt_file_AES_GCM, decrypt_file_AES_GCM
-from thuonglib.HASH import sha256, sha512, sha3_256, sha3_512, check_hash
+from thuonglib.encrypt_decrypt_file    import encrypt_file as encrypt_file_XOR, decrypt_file as decrypt_file_XOR
+from thuonglib.c_by_hand               import control_by_hand
+from thuonglib.delete_folder           import clean_files_temp, del_dir_downloads
+from thuonglib.password_cipher         import p_cipher
+from thuonglib.divide_merge_file       import divide_file, merge_file
+from thuonglib.AES_CBC                 import encrypt_file_AES_CBC, decrypt_file_AES_CBC
+from thuonglib.RSA_OAEP                import export_keys_RSA_OAEP, encrypt_file as encrypt_file_rsa, decrypt_file as decrypt_file_rsa
+from thuonglib.AES_CTR                 import encrypt_file_AES_CTR, decrypt_file_AES_CTR
+from thuonglib.AES_GCM                 import encrypt_file_AES_GCM, decrypt_file_AES_GCM
+from thuonglib.HASH                    import sha256, sha512, sha3_256, sha3_512, check_hash
+from thuonglib.utilities               import cipher_utilities
 
 def main():
     parser = argparse.ArgumentParser(
@@ -62,6 +63,14 @@ def main():
                              help="Dữ liệu đầu vào để băm, chuỗi data hoặc chuỗi rỗng nếu tạo giá trị hash bằng với file.")
     # ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤
     check_hash_parser = subparsers.add_parser("check_hash", help="So sánh mã hash của file với mã hash đã cung cấp.")
+    # ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤
+    my_sign_file_parser = subparsers.add_parser("my_sign", help="Chương trình ký số và xác minh chữ ký số, không dùng thư viện.")
+    my_sign_file_parser.add_argument("--my_sign_file", "-cs", action="store_true", help="Tạo chữ ký số.")
+    my_sign_file_parser.add_argument("--my_verify_signature", "-vs", action="store_true", help="Xác minh chữ ký số.")
+
+    enc_hash_sign_parser = subparsers.add_parser("enc_hash_sign", help="Chương trình mã hóa, hash, chữ ký số, không dùng thư viện.")
+    enc_hash_sign_parser.add_argument("--creat", "-c", action="store_true", help="Tạo enc_hash_sign.")
+    enc_hash_sign_parser.add_argument("--decry", "-df", action="store_true", help="giải mã enc_hash_sign.")
     
     args = parser.parse_args()
     print(f"Hello, {args.name}!")
@@ -130,6 +139,16 @@ def main():
             sha3_512(args.data, file_write=0 if args.data else 1)
     elif args.command == "check_hash":
         check_hash()
+    elif args.command == "my_sign":
+        if args.my_sign_file:
+            cipher_utilities.my_sign_file()
+        elif args.my_verify_signature:
+            cipher_utilities.my_verify_signature()
+    elif args.command == "enc_hash_sign":
+        if args.creat:
+            cipher_utilities.enc_hash_sign()
+        elif args.decry:
+            cipher_utilities.Vsign_Chash_def()
     else:
         parser.print_help()
 

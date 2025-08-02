@@ -1,0 +1,10 @@
+MyModule DEFINITIONS ::= BEGIN
+
+File ::= SEQUENCE {
+    namefile   UTF8String,
+    datafile   OCTET STRING
+}
+
+FileList ::= SEQUENCE OF File
+
+END
