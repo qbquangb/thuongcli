@@ -1,3 +1,3 @@
 export_keys:
-    priv_path: G:\My Drive\backup\RSA_OAEP\private.pem
-    pub_path: G:\My Drive\backup\RSA_OAEP\public.pem
+    priv_path: G:\My Drive\backup\RSA_USE\private.pem
+    pub_path: G:\My Drive\backup\RSA_USE\public.pem

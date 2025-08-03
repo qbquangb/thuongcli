@@ -11,11 +11,12 @@ from thuonglib.AES_CTR                 import encrypt_file_AES_CTR, decrypt_file
 from thuonglib.AES_GCM                 import encrypt_file_AES_GCM, decrypt_file_AES_GCM
 from thuonglib.HASH                    import sha256, sha512, sha3_256, sha3_512, check_hash
 from thuonglib.utilities               import cipher_utilities
+from thuonglib.fileSecurity            import file_Security, unFileSecurity
 
 def main():
     parser = argparse.ArgumentParser(
         prog="cli",
-        usage="mo CMD va nhan cli --help",
+        usage="\nmo CMD va nhan cli --help\n",
         description="Chuong trinh dieu khien may tinh bang dong lenh.\n"
                     "Chuong trinh duoc viet boi Tran Dinh Thuong.\n"
                     "Email: qbquangbinh@gmail.com"
@@ -64,6 +65,24 @@ def main():
     # ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤
     check_hash_parser = subparsers.add_parser("check_hash", help="So sánh mã hash của file với mã hash đã cung cấp.")
     # ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤
+
+    sign_file_parser = subparsers.add_parser("sign", help="Chương trình chữ ký số, dùng thư viện pycryptodome.")
+    sign_file_parser.add_argument("--creat", "-cs", action="store_true", help="Tạo chữ ký số.")
+    sign_file_parser.add_argument("--verify", "-vs", action="store_true", help="Xác minh chữ ký số.")
+    sign_file_parser.add_argument("--filePath", "-fp", required=True, type=str, help="Đường dẫn file cần tạo hoặc xác minh chữ ký số.", metavar="INFILE")
+    sign_file_parser.add_argument("--keyPath", "-kp", required=True, type=str, 
+                                  help="Đường dẫn đến khóa riêng tư (để tạo chữ ký số) hoặc khóa công khai (để xác minh chữ ký số).", metavar="INFILE")
+    sign_file_parser.add_argument("--passworldKey", "-pk", required=True, type=bool, help="Nhập True hoặc False, mật khẩu để bảo vệ khóa RSA.", 
+                                  metavar="True/False")
+    
+    file_security_parser = subparsers.add_parser("file", help="Chương trình mã hóa và chữ ký số, dùng thư viện pycryptodome.")
+    file_security_parser.add_argument("--choice", "-ch", choices=["ENC", "DEC"], help="Chọn ENC để mã hóa, DEC để giải mã.")
+    file_security_parser.add_argument("--filePath", "-fp", required=True, type=str, help="Đường dẫn file cần tạo hoặc xác minh chữ ký số.", metavar="INFILE")
+    file_security_parser.add_argument("--privateKeyPath", "-pri", required=True, type=str, help="Đường dẫn đến khóa riêng.", metavar="INFILE")
+    file_security_parser.add_argument("--passKeyPrivate", "-p_pri", required=True, type=bool, help="Nhập True hoặc False.", metavar="True/False")
+    file_security_parser.add_argument("--publicKeyPath", "-pub", required=True, type=str, help="Đường dẫn đến khóa công khai.", metavar="INFILE")
+    file_security_parser.add_argument("--passKeyPublic", "-p_pub", required=True, type=bool, help="Nhập True hoặc False.", metavar="True/False")
+
     my_sign_file_parser = subparsers.add_parser("my_sign", help="Chương trình ký số và xác minh chữ ký số, không dùng thư viện.")
     my_sign_file_parser.add_argument("--my_sign_file", "-cs", action="store_true", help="Tạo chữ ký số.")
     my_sign_file_parser.add_argument("--my_verify_signature", "-vs", action="store_true", help="Xác minh chữ ký số.")
@@ -149,6 +168,16 @@ def main():
             cipher_utilities.enc_hash_sign()
         elif args.decry:
             cipher_utilities.Vsign_Chash_def()
+    elif args.command == "sign":
+        if args.creat:
+            cipher_utilities.sign_file(args.filePath, args.keyPath, args.passworldKey)
+        elif args.verify:
+            cipher_utilities.verify_signature(args.filePath, args.keyPath)
+    elif args.command == "file":
+        if args.choice == "ENC":
+            file_Security(args.filePath, args.privateKeyPath, args.passKeyPrivate, args.publicKeyPath, args.passKeyPublic)
+        elif args.choice == "DEC":
+            unFileSecurity(args.filePath, args.privateKeyPath, args.passKeyPrivate, args.publicKeyPath, args.passKeyPublic)
     else:
         parser.print_help()
 
