@@ -12,6 +12,7 @@ from thuonglib.AES_GCM                 import encrypt_file_AES_GCM, decrypt_file
 from thuonglib.HASH                    import sha256, sha512, sha3_256, sha3_512, check_hash
 from thuonglib.utilities               import cipher_utilities
 from thuonglib.fileSecurity            import file_Security, unFileSecurity
+from thuonglib.file_compression        import compress_file_1, decompress_file_1
 
 def main():
     parser = argparse.ArgumentParser(
@@ -90,6 +91,12 @@ def main():
     enc_hash_sign_parser = subparsers.add_parser("enc_hash_sign", help="Chương trình mã hóa, hash, chữ ký số, không dùng thư viện.")
     enc_hash_sign_parser.add_argument("--creat", "-c", action="store_true", help="Tạo enc_hash_sign.")
     enc_hash_sign_parser.add_argument("--decry", "-df", action="store_true", help="giải mã enc_hash_sign.")
+
+    compress_file_1_parser = subparsers.add_parser("compress_file_1", help="Chương trình nén file bằng thuật toán Huffman.")
+    compress_file_1_parser.add_argument("--choice", "-c", choices=["com", "decom"], required=True, 
+                                        help="Chọn 'com' để nén file, 'decom' để giải nén file.")
+    compress_file_1_parser.add_argument("--input_file", "-i", type=str, required=True, 
+                                        help="Đường dẫn file đầu vào để nén hoặc giải nén.", metavar="INFILE")
     
     args = parser.parse_args()
     print(f"Hello, {args.name}!")
@@ -178,6 +185,11 @@ def main():
             file_Security(args.filePath, args.privateKeyPath, args.passKeyPrivate, args.publicKeyPath, args.passKeyPublic)
         elif args.choice == "DEC":
             unFileSecurity(args.filePath, args.privateKeyPath, args.passKeyPrivate, args.publicKeyPath, args.passKeyPublic)
+    elif args.command == "compress_file_1":
+        if args.choice == "com":
+            compress_file_1(args.input_file)
+        elif args.choice == "decom":
+            decompress_file_1(args.input_file)
     else:
         parser.print_help()
 
