@@ -13,6 +13,8 @@ from thuonglib.HASH                    import sha256, sha512, sha3_256, sha3_512
 from thuonglib.utilities               import cipher_utilities
 from thuonglib.fileSecurity            import file_Security, unFileSecurity
 from thuonglib.file_compression        import compress_file_1, decompress_file_1
+import gzip
+from pathlib                           import Path
 
 def main():
     parser = argparse.ArgumentParser(
@@ -96,6 +98,12 @@ def main():
     compress_file_1_parser.add_argument("--choice", "-c", choices=["com", "decom"], required=True, 
                                         help="Chọn 'com' để nén file, 'decom' để giải nén file.")
     compress_file_1_parser.add_argument("--input_file", "-i", type=str, required=True, 
+                                        help="Đường dẫn file đầu vào để nén hoặc giải nén.", metavar="INFILE")
+    
+    compress_file_2_parser = subparsers.add_parser("gzip", help="Chương trình nén file bằng gzip.")
+    compress_file_2_parser.add_argument("--choice", "-c", choices=["com", "decom"], required=True, 
+                                        help="Chọn 'com' để nén file, 'decom' để giải nén file.")
+    compress_file_2_parser.add_argument("--input_file", "-i", type=str, required=True, 
                                         help="Đường dẫn file đầu vào để nén hoặc giải nén.", metavar="INFILE")
     
     args = parser.parse_args()
@@ -190,6 +198,24 @@ def main():
             compress_file_1(args.input_file)
         elif args.choice == "decom":
             decompress_file_1(args.input_file)
+    elif args.command == "gzip":
+        p = Path(args.input_file)
+        if not p.exists():
+            print(f"File {args.input_file} không tồn tại.")
+            return
+        if args.choice == "com":
+            out_path = p.with_name('gz_' + p.name + '.gz')
+            with open(args.input_file, 'rb') as f_in, gzip.open(out_path, 'wb') as f_out:
+                f_out.writelines(f_in)
+            print(f"File {args.input_file} đã được nén thành {out_path}")
+        elif args.choice == "decom":
+            if not args.input_file.endswith('.gz'):
+                print("Vui lòng cung cấp file nén gzip (.gz).")
+                return
+            out_path = p.with_suffix('')
+            with gzip.open(args.input_file, 'rb') as f_in, open(out_path, 'wb') as f_out:
+                f_out.write(f_in.read())
+            print(f"File {args.input_file} đã được giải nén thành {out_path}")
     else:
         parser.print_help()
 
